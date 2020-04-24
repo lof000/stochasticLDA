@@ -88,10 +88,11 @@ class SVILDA():
 	
 	
 	def runSVI(self):
-
-		for i in range(self._iterations):			
-			randint = random.randint(0, self._D-1)
-			print "ITERATION", i, " running document number ", randint
+		print("Process runSVI...")
+		for i in range(self._iterations):	
+			#randint = random.randint(0, self._D-1)
+			randint = random.randint(0, len(self._docs)-1)
+			#print "ITERATION", i, " running document number ", randint
 			if self._parsed == False:
 				doc = parseDocument(self._docs[randint],self._vocab)
 				phi_doc, newdoc, gamma_d = self.updateLocal(doc)
@@ -163,7 +164,7 @@ def test(k, iterations):
 	finallambda = testset._lambda
 	
 	heldoutdocs = getalldocs("testdocs.txt")
-
+	print "heldout "
 	perplexity = testset.calcPerplexity(docs = heldoutdocs)
 
 	with open("temp/%i_%i_%f_results.csv" %(k, iterations, perplexity), "w+") as f:
@@ -178,6 +179,7 @@ def test(k, iterations):
 				if j >= 15:
 					break
 	topics, topic_probs = testset.getTopics()
+	print("plottoiocs")
 	testset.plotTopics(perplexity)
 
 	for kk in range(0, len(finallambda)):
@@ -188,9 +190,9 @@ def test(k, iterations):
 		# print temp
 		print 'topic %d:' % (kk)
 		# feel free to change the "53" here to whatever fits your screen nicely.
-		for i in range(0, 10):
+		for i in range(0, 2):
 			print '%20s  \t---\t  %.4f' % (vocab.keys()[vocab.values().index(temp[i][1])], temp[i][0])
-		print
+		#print
 
 
 	with open("temp/%i_%i_%f_raw.txt" %(k, iterations, perplexity), "w+") as f:
@@ -228,14 +230,20 @@ def main():
 	if mode == "test":
 		test(K, iterations)
 	if mode == "normal":
+		print "rodando no modo normal"
 		assert vocab is not None, "no vocab"
 		assert docs is not None, "no docs"
 		D = len(docs)
 		docs = getalldocs(docs)
 		vocab = getVocab(vocab)
+		print "------------------------------"
+		print vocab
+		print "------------------------------"
+		print docs
 		lda = SVILDA(vocab = vocab, K = K, D = D, alpha = alpha, eta = eta, tau = tau, kappa = kappa, docs = docs, iterations = iterations)
 		lda.runSVI()
-
+		print "acabando...."
+		print lda
 		return lda 
 
 
